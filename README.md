@@ -34,6 +34,29 @@ For a quick and drity deployment using docker-compose
 ./scripts/deployment/deploy-local.sh
 ```
 
+## Deployment
+Each service relies on enviornment variables in order to operate and identify the required services.
+
+### Dummy-Service
+* NATS_HOST=<host>
+* NATS_PASS=<pass>
+* NATS_USER=<user>
+
+### Data-Service
+* NATS_HOST=<host>
+* NATS_USER=<user>
+* NATS_PASS=<pass>
+* MONGO_HOST=<host>
+* MONGO_USER=<user>
+* MONGO_PASS=<pass>
+
+### Cache-Service
+* NATS_HOST=<host>
+* NATS_USER=<user>
+* NATS_PASS=<pass>
+* REDIS_HOST=<host>
+* REDIS_PASS=<pass>
+
 ## Note
 This project uses a special image of nats created to support 32mb nats messages. Nats supports up to 64mb messages however it is not recommended to go that far. That image is r4stl1n/nats-large-payload:latest
 
