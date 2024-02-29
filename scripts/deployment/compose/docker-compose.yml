@@ -1,0 +1,102 @@
+version: '3.4'
+services:
+  # Core service files
+  dozzle:
+    image: amir20/dozzle:latest
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "9999:8080"
+
+  nats:
+    image: r4stl1n/nats-large-payload:latest
+    restart: always
+    expose:
+      - "4222"
+      - "8222"
+    ports:
+      - "4222:4222"
+      - "8222:8222"
+
+  redis:
+    image: redis:latest
+    restart: always
+    ports:
+      - "6379:6379"
+    environment:
+      - REDIS_PASSWORD=toor
+      - REDIS_PORT=6379
+      - REDIS_DATABASES=16
+
+  mongodb:
+    image: mongo:latest
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: toor
+    ports:
+      - 27017:27017
+    volumes:
+      - mongodb_data:/data/db
+
+  mongo-express:
+    image: mongo-express:latest
+    environment:
+      - ME_CONFIG_MONGODB_PORT=27017
+      - ME_CONFIG_MONGODB_ENABLE_ADMIN=true
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=root
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=toor
+      - ME_CONFIG_BASICAUTH_USERNAME=root
+      - ME_CONFIG_BASICAUTH_PASSWORD=toor
+      - ME_CONFIG_MONGODB_SERVER=mongodb
+    depends_on:
+      - mongodb
+    ports:
+      - "8081:8081"
+
+  micro-dummy-service:
+    image: micro-dummy-service
+    restart: always
+    links:
+      - nats
+    depends_on:
+      - nats
+    environment:
+      NATS_HOST: "nats:4222"
+      NATS_USER: "ruser"
+      NATS_PASS: "T0pS3cr3t"
+
+  micro-data-service:
+    image: micro-data-service
+    restart: always
+    links:
+      - nats
+    depends_on:
+      - nats
+      - mongodb
+    environment:
+      NATS_HOST: "nats:4222"
+      NATS_USER: "ruser"
+      NATS_PASS: "T0pS3cr3t"
+      MONGO_HOST: "mongodb:27017"
+      MONGO_USER: "root"
+      MONGO_PASS: "toor"
+
+  micro-cache-service:
+    image: micro-cache-service
+    restart: always
+    links:
+      - nats
+    depends_on:
+      - nats
+      - redis
+    environment:
+      NATS_HOST: "nats:4222"
+      NATS_USER: "ruser"
+      NATS_PASS: "T0pS3cr3t"
+      REDIS_HOST: "redis:6379"
+      REDIS_PASS: "toor"
+
+volumes:
+  mongodb_data:
+
+
