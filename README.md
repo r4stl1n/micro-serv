@@ -34,6 +34,18 @@ For a quick and drity deployment using docker-compose
 ./scripts/deployment/deploy-local.sh
 ```
 
+## Test
+Due to the tests spinning up temporary services, they expect the core services to be online and running.
+
+```bash
+./scripts/deployment/start-core-services.sh
+```
+
+Run test cases example
+```bash
+MONGO_HOST=localhost:27017 MONGO_PASS=toor MONGO_USER=root NATS_HOST=localhost:4222 NATS_PASS=T0pS3cr3t NATS_USER=ruser REDIS_HOST=localhost:6379 REDIS_PASS=toor go test ./...
+```
+
 ## Deployment
 Each service relies on enviornment variables in order to operate and identify the required services.
 

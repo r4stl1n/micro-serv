@@ -53,13 +53,10 @@ services:
     ports:
       - "8081:8081"
 
+  # Services
   micro-dummy-service:
     image: micro-dummy-service
     restart: always
-    links:
-      - nats
-    depends_on:
-      - nats
     environment:
       NATS_HOST: "nats:4222"
       NATS_USER: "ruser"
@@ -68,11 +65,6 @@ services:
   micro-data-service:
     image: micro-data-service
     restart: always
-    links:
-      - nats
-    depends_on:
-      - nats
-      - mongodb
     environment:
       NATS_HOST: "nats:4222"
       NATS_USER: "ruser"
@@ -84,11 +76,6 @@ services:
   micro-cache-service:
     image: micro-cache-service
     restart: always
-    links:
-      - nats
-    depends_on:
-      - nats
-      - redis
     environment:
       NATS_HOST: "nats:4222"
       NATS_USER: "ruser"
@@ -98,5 +85,4 @@ services:
 
 volumes:
   mongodb_data:
-
 

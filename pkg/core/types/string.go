@@ -1,9 +1,11 @@
 package types
 
 import (
+	"crypto/rand"
 	"encoding/hex"
 	"encoding/json"
-	"crypto/rand"
+	"go.uber.org/zap"
+	"math/big"
 	"strings"
 )
 
@@ -15,8 +17,18 @@ func (s String) Random(characterCount int) string {
 	chars := []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 	length := characterCount
 	var b strings.Builder
+
 	for i := 0; i < length; i++ {
-		b.WriteRune(chars[rand.Intn(len(chars))])
+
+		randInt, randError := rand.Int(rand.Reader, big.NewInt(int64(len(chars))))
+
+		if randError != nil {
+			zap.L().Error("failed to generate random integer", zap.Error(randError))
+			continue
+		}
+
+		b.WriteRune(chars[randInt.Int64()])
+
 	}
 
 	return b.String()
